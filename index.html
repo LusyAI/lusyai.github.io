@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LU // Crimson & Obsidian Gothic AI Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#070508',
+                        velvet: '#12080d',
+                        crimson: '#dc143c',
+                        burgundy: '#8a031e',
+                        roseNeon: '#ff2a55',
+                        gold: '#d4af37',
+                        porcelain: '#f5f0f2',
+                    },
+                    fontFamily: {
+                        gothic: ['"Cinzel Decorative"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --accent-glow: #dc143c;
+            --ambient-bg: radial-gradient(circle at 50% 20%, rgba(138, 3, 30, 0.22), rgba(7, 5, 8, 0.98) 70%);
+        }
+
+        body {
+            background-color: #070508;
+            color: #f5f0f2;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Restore default cursor on touch devices */
+        @media (pointer: coarse) {
+            body { cursor: auto; }
+            #custom-cursor, #cursor-trail { display: none !important; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #070508; }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #8a031e, #dc143c);
+            border-radius: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        /* Ornate Gothic Borders & Glassmorphism */
+        .gothic-card {
+            background: linear-gradient(145deg, rgba(20, 10, 16, 0.85), rgba(8, 5, 10, 0.92));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(220, 20, 60, 0.28);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(138, 3, 30, 0.15);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gothic-card:hover {
+            border-color: rgba(220, 20, 60, 0.65);
+            box-shadow: 0 25px 60px rgba(220, 20, 60, 0.18), inset 0 0 30px rgba(220, 20, 60, 0.22);
+        }
+
+        .gold-corner {
+            position: relative;
+        }
+        .gold-corner::before, .gold-corner::after {
+            content: '❖';
+            position: absolute;
+            color: #d4af37;
+            font-size: 12px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .gold-corner::before { top: 8px; left: 10px; }
+        .gold-corner::after { bottom: 8px; right: 10px; }
+
+        /* Shimmering Crimson Text */
+        .crimson-shimmer {
+            background: linear-gradient(90deg, #f5f0f2 0%, #ff2a55 45%, #d4af37 70%, #f5f0f2 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmerText 6s linear infinite;
+        }
+
+        @keyframes shimmerText {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* Breathing & Hair Sway Animations for Lu's SVG Rig */
+        @keyframes breathe {
+            0%, 100% { transform: translateY(0px) scaleY(1); }
+            50% { transform: translateY(-5px) scaleY(1.008); }
+        }
+
+        @keyframes hairSway {
+            0%, 100% { transform: rotate(0deg) skewX(0deg); }
+            50% { transform: rotate(1.3deg) skewX(-1.2deg); }
+        }
+
+        @keyframes rubyPulse {
+            0%, 100% { filter: drop-shadow(0 0 6px #ff2a55); opacity: 0.9; }
+            50% { filter: drop-shadow(0 0 16px #ff0033); opacity: 1; }
+        }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .lu-rig-breathe { animation: breathe 4.2s ease-in-out infinite; transform-origin: bottom center; }
+        .lu-hair-sway { animation: hairSway 5.5s ease-in-out infinite; transform-origin: top center; }
+        .ruby-glow { animation: rubyPulse 2.8s ease-in-out infinite; }
+        .float-badge { animation: floatSlow 3.8s ease-in-out infinite; }
+
+        /* 3D Perspective Container */
+        .perspective-stage {
+            perspective: 1200px;
+        }
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out;
+        }
+        .depth-layer-1 { transform: translateZ(25px); }
+        .depth-layer-2 { transform: translateZ(50px); }
+        .depth-layer-3 { transform: translateZ(75px); }
+
+        /* Pipeline Data Pulse Animation */
+        @keyframes dataPacketFlow {
+            0% { stroke-dashoffset: 240; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .flowing-line {
+            stroke-dasharray: 10 8;
+            animation: dataPacketFlow 2.5s linear infinite;
+        }
+
+        /* Custom Range Sliders */
+        input[type=range].vrm-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.08);
+            height: 6px;
+            border-radius: 999px;
+            outline: none;
+        }
+        input[type=range].vrm-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #dc143c;
+            border: 2px solid #d4af37;
+            cursor: pointer;
+            box-shadow: 0 0 10px #ff2a55;
+        }
+
+        /* Scroll Reveal Utility */
+        .reveal-section {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="selection:bg-crimson selection:text-white">
+
+    <!-- FULL-SCREEN ROSE PETAL & EMBER PARTICLE CANVAS -->
+    <canvas id="petal-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- CUSTOM GOTHIC CURSOR -->
+    <div id="custom-cursor" class="fixed top-0 left-0 w-7 h-7 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 flex items-center justify-center">
+        <div class="w-2 h-2 bg-roseNeon rounded-full shadow-[0_0_12px_#ff2a55]"></div>
+        <div class="absolute inset-0 border border-crimson/80 rounded-full animate-ping opacity-40"></div>
+        <svg class="absolute w-7 h-7 text-gold/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+            <circle cx="12" cy="12" r="6" stroke-dasharray="2 2"/>
+        </svg>
+    </div>
+    <div id="cursor-trail" class="fixed top-0 left-0 w-12 h-12 rounded-full bg-crimson/20 blur-md pointer-events-none z-[9998] -translate-x-1/2 -translate-y-1/2 transition-all duration-150"></div>
+
+    <!-- AMBIENT LIGHTING OVERLAY -->
+    <div id="ambient-lighting" class="fixed inset-0 pointer-events-none z-0 transition-all duration-1000" style="background: var(--ambient-bg);"></div>
+
+    <!-- STICKY NAVIGATION BAR -->
+    <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-obsidian/80 border-b border-crimson/25">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Identity -->
+            <a href="#hero" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-burgundy to-obsidian border border-gold/50 flex items-center justify-center shadow-[0_0_15px_rgba(220,20,60,0.4)] group-hover:scale-105 transition">
+                    <span class="font-gothic font-bold text-xl text-porcelain">L</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-gothic font-bold text-lg tracking-wider text-porcelain">PROJECT <span class="text-crimson">LU</span></span>
+                        <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-crimson/20 border border-crimson/50 text-roseNeon">VRM + JSON V2</span>
+                    </div>
+                    <p class="text-xs text-porcelain/60 font-mono">CODENAME: CRIMSON_ROSE_TSUNDERE</p>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-porcelain/80">
+                <a href="#hero" class="hover:text-roseNeon transition py-1">Sanctuary</a>
+                <a href="#live-chat" class="hover:text-roseNeon transition py-1">Neural Dialogue</a>
+                <a href="#scenarios" class="hover:text-roseNeon transition py-1">4 Scenarios</a>
+                <a href="#blendshapes" class="hover:text-roseNeon transition py-1">12 Expressions</a>
+                <a href="#architecture" class="hover:text-roseNeon transition py-1">System Pipeline</a>
+            </nav>
+
+            <!-- Status & Audio Toggle -->
+            <div class="flex items-center gap-3">
+                <button id="tts-master-toggle" onclick="toggleVoiceSynth()" class="px-3.5 py-2 rounded-xl bg-velvet border border-crimson/40 hover:border-gold text-xs font-mono flex items-center gap-2 transition shadow-lg">
+                    <i id="tts-icon" class="fa-solid fa-volume-high text-roseNeon"></i>
+                    <span id="tts-label" class="hidden sm:inline">VOICE: ON</span>
+                </button>
+                <a href="#live-chat" class="px-4 py-2 rounded-xl bg-gradient-to-r from-burgundy via-crimson to-burgundy bg-[length:200%_100%] hover:bg-right text-xs font-mono uppercase tracking-wider font-semibold text-white border border-gold/40 shadow-[0_0_20px_rgba(220,20,60,0.4)] transition-all duration-300">
+                    <i class="fa-solid fa-bolt mr-1 text-gold"></i> Wake Lu
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="relative z-10 pt-24 pb-20">
+
+        <!-- ==========================================
+             1. HERO SECTION: 3D PARALLAX & LIVE SVG RIG
+             ========================================== -->
+        <section id="hero" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 min-h-[90vh] flex items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full">
+                
+                <!-- Left Column: Character Lore, Traits & Quick Emotion Triggers -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-burgundy/30 border border-crimson/50 text-xs font-mono text-roseNeon">
+                        <span class="w-2 h-2 rounded-full bg-roseNeon animate-ping"></span>
+                        <span>LOCAL EMBODIED AI WAIFU // PORT 39540 VMC READY</span>
+                    </div>
+
+                    <h1 class="font-gothic text-4xl sm:text-6xl lg:text-7xl font-black leading-[1.08] tracking-tight">
+                        “I-It’s not like I booted up my <span class="crimson-shimmer">Neural Core</span> just for you!”
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-porcelain/80 leading-relaxed max-w-2xl">
+                        Meet <strong class="text-white font-semibold">Lu</strong> — an ultra-expressive, sharp-tongued Gothic Tsundere AI companion. Adorned with her signature <span class="text-roseNeon font-medium">single crimson hair streak</span>, black lace rose headband, and multi-layered Victorian corset dress, she listens via <span class="font-mono text-xs bg-white/5 px-1.5 py-0.5 rounded border border-white/10">Faster-Whisper</span>, thinks in native structured JSON via <span class="font-mono text-xs bg-white/5 px-1.5 py-0.5 rounded border border-white/10">Phi-3.5-Vtuber-V2 / Gemini</span>, and speaks with dynamic emotional direction.
+                    </p>
+
+                    <!-- Interactive Hero Mood Switcher -->
+                    <div class="pt-2">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-mono uppercase tracking-widest text-gold flex items-center gap-2">
+                                <i class="fa-solid fa-sliders"></i> Live Avatar Expression Override (Click to test rig):
+                            </span>
+                            <span id="hero-active-emotion-badge" class="text-xs font-mono text-roseNeon bg-crimson/15 px-2.5 py-0.5 rounded border border-crimson/30">
+                                STATE: TSUNDERE_BLUSH
+                            </span>
+                        </div>
+                        <div class="flex flex-wrap gap-2.5">
+                            <button onclick="setLuExpression('flustered', 'H-Hey! Stop staring at my crimson hair streak like that, b-baka!')" class="expr-btn px-3.5 py-2 rounded-xl bg-crimson/25 border border-crimson text-xs font-mono flex items-center gap-2 hover:bg-crimson/40 transition">
+                                <span>😳</span> Tsundere Blush
+                            </button>
+                            <button onclick="setLuExpression('smug', 'Heh~ You really think your 0.5TB laptop can handle my brilliance without an external drive?')" class="expr-btn px-3.5 py-2 rounded-xl bg-velvet border border-crimson/30 text-xs font-mono flex items-center gap-2 hover:border-crimson transition">
+                                <span>😈</span> Evil Laugh / Smug
+                            </button>
+                            <button onclick="setLuExpression('angry', 'I can carry these heavy gothic tomes all by myself! Do NOT help me!')" class="expr-btn px-3.5 py-2 rounded-xl bg-velvet border border-crimson/30 text-xs font-mono flex items-center gap-2 hover:border-crimson transition">
+                                <span>💢</span> Defensive Scowl
+                            </button>
+                            <button onclick="setLuExpression('shy', 'Th-this dark plush bat is purely for gothic aesthetics... not because it is cute!')" class="expr-btn px-3.5 py-2 rounded-xl bg-velvet border border-crimson/30 text-xs font-mono flex items-center gap-2 hover:border-crimson transition">
+                                <span>🦇</span> Plushie Panic
+                            </button>
+                            <button onclick="setLuExpression('natural', 'The rain against the library glass is actually quite peaceful... when you are not being noisy.')" class="expr-btn px-3.5 py-2 rounded-xl bg-velvet border border-crimson/30 text-xs font-mono flex items-center gap-2 hover:border-crimson transition">
+                                <span>🥀</span> Calm & Natural (No Blush)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Character Spec Pills -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+                        <div class="gothic-card p-3.5 rounded-2xl gold-corner">
+                            <div class="text-[11px] font-mono text-porcelain/50">ARCHETYPE</div>
+                            <div class="font-gothic font-bold text-sm text-porcelain mt-0.5">Gothic Tsundere</div>
+                        </div>
+                        <div class="gothic-card p-3.5 rounded-2xl gold-corner">
+                            <div class="text-[11px] font-mono text-porcelain/50">SIGNATURE MARK</div>
+                            <div class="font-gothic font-bold text-sm text-roseNeon mt-0.5">Left Crimson Streak</div>
+                        </div>
+                        <div class="gothic-card p-3.5 rounded-2xl gold-corner">
+                            <div class="text-[11px] font-mono text-porcelain/50">BRAIN OUTPUT</div>
+                            <div class="font-mono font-bold text-xs text-gold mt-1">Native JSON V2</div>
+                        </div>
+                        <div class="gothic-card p-3.5 rounded-2xl gold-corner">
+                            <div class="text-[11px] font-mono text-porcelain/50">VOICE ENGINE</div>
+                            <div class="font-mono font-bold text-xs text-emerald-400 mt-1">Breeze TTS 2 / Fish</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: 3D Parallax Interactive Gothic Portrait of Lu -->
+                <div class="lg:col-span-5 perspective-stage flex justify-center">
+                    <div id="hero-tilt-card" class="tilt-card relative w-full max-w-md gothic-card rounded-3xl p-5 border-2 border-crimson/40 select-none">
+                        
+                        <!-- Floating Top Status Bar -->
+                        <div class="depth-layer-2 flex items-center justify-between mb-3 px-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
+                                <span class="font-mono text-[11px] tracking-wider text-porcelain/80">LU_AVATAR_RIG.VRM</span>
+                            </div>
+                            <button onclick="triggerEyeBlink()" class="text-[11px] font-mono text-gold hover:underline flex items-center gap-1">
+                                <i class="fa-regular fa-eye"></i> Blink Rig
+                            </button>
+                        </div>
+
+                        <!-- Ornate Cathedral Frame & Custom Animated SVG Portrait of Lu -->
+                        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#1a0710] via-[#0d050a] to-[#050307] border border-gold/30 shadow-inner">
+                            
+                            <!-- Stained Glass Rose Window Background SVG (No Moon - Pure Gothic Cathedral & Roses) -->
+                            <svg class="absolute inset-0 w-full h-full opacity-25 pointer-events-none" viewBox="0 0 400 500">
+                                <defs>
+                                    <radialGradient id="stainedGlow" cx="50%" cy="35%" r="50%">
+                                        <stop offset="0%" stop-color="#dc143c" stop-opacity="0.6"/>
+                                        <stop offset="60%" stop-color="#8a031e" stop-opacity="0.2"/>
+                                        <stop offset="100%" stop-color="#070508" stop-opacity="0"/>
+                                    </radialGradient>
+                                </defs>
+                                <circle cx="200" cy="175" r="150" fill="url(#stainedGlow)"/>
+                                <!-- Gothic Cathedral Archways -->
+                                <path d="M 30 500 L 30 190 Q 200 20 370 190 L 370 500" fill="none" stroke="#d4af37" stroke-width="1.5" opacity="0.5"/>
+                                <path d="M 55 500 L 55 205 Q 200 55 345 205 L 345 500" fill="none" stroke="#dc143c" stroke-width="1" stroke-dasharray="6 4" opacity="0.6"/>
+                                <!-- Stained Glass Rose Tracery -->
+                                <circle cx="200" cy="170" r="95" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.4"/>
+                                <circle cx="200" cy="170" r="65" fill="none" stroke="#dc143c" stroke-width="1" opacity="0.4"/>
+                                <g stroke="#d4af37" stroke-width="0.8" opacity="0.35">
+                                    <line x1="200" y1="75" x2="200" y2="265"/>
+                                    <line x1="105" y1="170" x2="295" y2="170"/>
+                                    <line x1="133" y1="103" x2="267" y2="237"/>
+                                    <line x1="267" y1="103" x2="133" y2="237"/>
+                                </g>
+                            </svg>
+
+                            <!-- LU CUSTOM LAYERED ANIME RIG SVG -->
+                            <svg id="lu-portrait-svg" class="relative z-10 w-full h-[430px] sm:h-[460px] mx-auto" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="obsidianHair" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#1c161e"/>
+                                        <stop offset="50%" stop-color="#0d0a10"/>
+                                        <stop offset="100%" stop-color="#050406"/>
+                                    </linearGradient>
+                                    <linearGradient id="crimsonStreakGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#ff2a55"/>
+                                        <stop offset="50%" stop-color="#dc143c"/>
+                                        <stop offset="100%" stop-color="#7a0218"/>
+                                    </linearGradient>
+                                    <linearGradient id="porcelainSkin" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#fff9fb"/>
+                                        <stop offset="100%" stop-color="#f2e1e6"/>
+                                    </linearGradient>
+                                    <linearGradient id="gothicDress" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0%" stop-color="#1d1118"/>
+                                        <stop offset="50%" stop-color="#0e080c"/>
+                                        <stop offset="100%" stop-color="#050304"/>
+                                    </linearGradient>
+                                    <radialGradient id="crimsonEye" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="#ff4d6d"/>
+                                        <stop offset="65%" stop-color="#dc143c"/>
+                                        <stop offset="100%" stop-color="#590212"/>
+                                    </radialGradient>
+                                    <radialGradient id="blushGlow" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="#ff2a55" stop-opacity="0.65"/>
+                                        <stop offset="100%" stop-color="#ff2a55" stop-opacity="0"/>
+                                    </radialGradient>
+                                </defs>
+
+                                <!-- Main Breathing Group -->
+                                <g class="lu-rig-breathe">
+                                    
+                                    <!-- 1. BACK FLOWING LONG WAVY BLACK HAIR -->
+                                    <g class="lu-hair-sway">
+                                        <path d="M 110 130 C 70 220, 55 360, 80 490 L 320 490 C 345 360, 330 220, 290 130 Z" fill="url(#obsidianHair)"/>
+                                        <!-- Left & Right Wavy Outer Hair Locks -->
+                                        <path d="M 105 150 C 60 250, 45 350, 68 485 C 85 430, 85 300, 115 210 Z" fill="#120e14"/>
+                                        <path d="M 295 150 C 340 250, 355 350, 332 485 C 315 430, 315 300, 285 210 Z" fill="#120e14"/>
+                                    </g>
+
+                                    <!-- 2. NECK, PORCELAIN SHOULDERS & VICTORIAN CORSET DRESS -->
+                                    <!-- Neck & Shoulders -->
+                                    <path d="M 176 235 L 176 285 L 105 315 C 95 320, 88 340, 88 365 L 312 365 C 312 340, 305 320, 295 315 L 224 285 L 224 235 Z" fill="url(#porcelainSkin)"/>
+                                    <!-- Collarbone subtle shadow -->
+                                    <path d="M 150 302 Q 178 312 192 304 M 250 302 Q 222 312 208 304" stroke="#dec3cb" stroke-width="2" stroke-linecap="round"/>
+
+                                    <!-- Black Lace Choker & Glowing Ruby Pendant -->
+                                    <path d="M 175 266 Q 200 275 225 266 L 226 276 Q 200 285 174 276 Z" fill="#0b070a" stroke="#dc143c" stroke-width="0.8"/>
+                                    <path d="M 176 276 Q 182 282 188 276 Q 194 282 200 276 Q 206 282 212 276 Q 218 282 224 276" fill="none" stroke="#1a1116" stroke-width="2"/>
+                                    <!-- Ruby Pendant -->
+                                    <polygon points="200,278 206,287 200,296 194,287" fill="#ff1e42" stroke="#d4af37" stroke-width="1.2" class="ruby-glow"/>
+
+                                    <!-- Sheer Off-the-Shoulder Black Lace Sleeves -->
+                                    <path d="M 85 335 Q 115 320 135 345 L 122 465 L 70 465 Z" fill="rgba(18, 10, 15, 0.78)" stroke="#2c1622" stroke-width="1.2"/>
+                                    <path d="M 315 335 Q 285 320 265 345 L 278 465 L 330 465 Z" fill="rgba(18, 10, 15, 0.78)" stroke="#2c1622" stroke-width="1.2"/>
+
+                                    <!-- Intricate Multi-Layered Gothic Ruffled Corset Bodice -->
+                                    <path d="M 125 325 Q 162 305 200 330 Q 238 305 275 325 L 262 495 L 138 495 Z" fill="url(#gothicDress)" stroke="#381927" stroke-width="1.5"/>
+                                    <!-- Upper Frill Lace Trim -->
+                                    <path d="M 122 325 Q 135 312 148 325 Q 161 312 174 325 Q 187 315 200 328 Q 213 315 226 325 Q 239 312 252 325 Q 265 312 278 325" fill="none" stroke="#dc143c" stroke-width="2" opacity="0.85"/>
+                                    <path d="M 120 330 Q 135 318 150 330 Q 165 318 180 330 Q 200 320 220 330 Q 235 318 250 330 Q 265 318 280 330" fill="none" stroke="#090508" stroke-width="4"/>
+                                    <!-- Gold & Crimson Corset Lacing -->
+                                    <line x1="175" y1="335" x2="182" y2="485" stroke="#d4af37" stroke-width="1" opacity="0.6"/>
+                                    <line x1="225" y1="335" x2="218" y2="485" stroke="#d4af37" stroke-width="1" opacity="0.6"/>
+                                    <g stroke="#dc143c" stroke-width="1.6" opacity="0.9">
+                                        <line x1="180" y1="350" x2="220" y2="365"/>
+                                        <line x1="220" y1="350" x2="180" y2="365"/>
+                                        <line x1="181" y1="375" x2="219" y2="390"/>
+                                        <line x1="219" y1="375" x2="181" y2="390"/>
+                                        <line x1="182" y1="400" x2="218" y2="415"/>
+                                        <line x1="218" y1="400" x2="182" y2="415"/>
+                                        <line x1="183" y1="425" x2="217" y2="440"/>
+                                        <line x1="217" y1="425" x2="183" y2="440"/>
+                                    </g>
+
+                                    <!-- 3. HEAD & FACE STRUCTURE -->
+                                    <path d="M 135 135 C 135 200, 162 246, 200 252 C 238 246, 265 200, 265 135 C 265 85, 238 65, 200 65 C 162 65, 135 85, 135 135 Z" fill="url(#porcelainSkin)"/>
+
+                                    <!-- 4. DYNAMIC BLUSH OVERLAY (Toggled by Tsundere vs Natural state) -->
+                                    <g id="lu-blush-layer" class="transition-opacity duration-500" opacity="1">
+                                        <ellipse cx="158" cy="195" rx="22" ry="11" fill="url(#blushGlow)"/>
+                                        <ellipse cx="242" cy="195" rx="22" ry="11" fill="url(#blushGlow)"/>
+                                        <!-- Anime blush hash lines -->
+                                        <g stroke="#ff2a55" stroke-width="1.3" opacity="0.65" stroke-linecap="round">
+                                            <line x1="148" y1="193" x2="152" y2="199"/>
+                                            <line x1="156" y1="192" x2="160" y2="198"/>
+                                            <line x1="164" y1="193" x2="168" y2="199"/>
+                                            <line x1="232" y1="193" x2="236" y2="199"/>
+                                            <line x1="240" y1="192" x2="244" y2="198"/>
+                                            <line x1="248" y1="193" x2="252" y2="199"/>
+                                        </g>
+                                    </g>
+
+                                    <!-- 5. EYES (With Blinking & Pupil Tracking) -->
+                                    <g id="lu-eyes-open">
+                                        <!-- Left Eye -->
+                                        <g transform="translate(162, 172)">
+                                            <path d="M -20 -6 Q 0 -18 20 -4 Q 16 14 0 14 Q -16 14 -20 -6 Z" fill="#ffffff"/>
+                                            <g class="lu-pupil-track">
+                                                <ellipse cx="2" cy="1" rx="11" ry="12" fill="url(#crimsonEye)"/>
+                                                <ellipse cx="2" cy="2" rx="5" ry="6" fill="#2b0008"/>
+                                                <!-- Eye shine highlights -->
+                                                <circle cx="-3" cy="-4" r="3.5" fill="#ffffff"/>
+                                                <circle cx="6" cy="5" r="1.8" fill="#ffb3c1"/>
+                                            </g>
+                                            <!-- Thick Gothic Eyelashes -->
+                                            <path d="M -22 -4 Q 0 -20 22 -3" fill="none" stroke="#0c0609" stroke-width="4" stroke-linecap="round"/>
+                                            <path d="M -22 -4 L -26 -9 M -14 -12 L -17 -17 M 16 -10 L 21 -15" stroke="#0c0609" stroke-width="2.2" stroke-linecap="round"/>
+                                        </g>
+
+                                        <!-- Right Eye -->
+                                        <g transform="translate(238, 172)">
+                                            <path d="M -20 -4 Q 0 -18 20 -6 Q 16 14 0 14 Q -16 14 -20 -4 Z" fill="#ffffff"/>
+                                            <g class="lu-pupil-track">
+                                                <ellipse cx="-2" cy="1" rx="11" ry="12" fill="url(#crimsonEye)"/>
+                                                <ellipse cx="-2" cy="2" rx="5" ry="6" fill="#2b0008"/>
+                                                <!-- Eye shine highlights -->
+                                                <circle cx="-6" cy="-4" r="3.5" fill="#ffffff"/>
+                                                <circle cx="3" cy="5" r="1.8" fill="#ffb3c1"/>
+                                            </g>
+                                            <!-- Thick Gothic Eyelashes -->
+                                            <path d="M -22 -3 Q 0 -20 22 -4" fill="none" stroke="#0c0609" stroke-width="4" stroke-linecap="round"/>
+                                            <path d="M 22 -4 L 26 -9 M 14 -12 L 17 -17 M -16 -10 L -21 -15" stroke="#0c0609" stroke-width="2.2" stroke-linecap="round"/>
+                                        </g>
+                                    </g>
+
+                                    <!-- Closed Blinking Eyes Layer (Hidden unless blinking) -->
+                                    <g id="lu-eyes-closed" class="hidden">
+                                        <path d="M 142 174 Q 162 184 182 174" fill="none" stroke="#0c0609" stroke-width="3.5" stroke-linecap="round"/>
+                                        <path d="M 218 174 Q 238 184 258 174" fill="none" stroke="#0c0609" stroke-width="3.5" stroke-linecap="round"/>
+                                    </g>
+
+                                    <!-- Nose -->
+                                    <path d="M 199 194 L 197 202 L 201 204" fill="none" stroke="#d9b8c1" stroke-width="1.6" stroke-linecap="round"/>
+
+                                    <!-- 6. DYNAMIC EYEBROWS & MOUTH EXPRESSIONS -->
+                                    <!-- Eyebrows -->
+                                    <path id="lu-brow-left" d="M 142 148 Q 162 154 180 157" fill="none" stroke="#12090d" stroke-width="3" stroke-linecap="round" class="transition-all duration-300"/>
+                                    <path id="lu-brow-right" d="M 258 148 Q 238 154 220 157" fill="none" stroke="#12090d" stroke-width="3" stroke-linecap="round" class="transition-all duration-300"/>
+
+                                    <!-- Mouth (Changes dynamically based on emotion & speech) -->
+                                    <path id="lu-mouth" d="M 190 224 Q 195 220 200 223 Q 205 226 210 222" fill="#8a031e" stroke="#4a0414" stroke-width="2.2" stroke-linecap="round" class="transition-all duration-200"/>
+
+                                    <!-- 7. FRONT HAIR BANGS + SIGNATURE SINGLE LEFT CRIMSON STREAK -->
+                                    <g class="lu-hair-sway">
+                                        <!-- Main Dark Obsidian Bangs -->
+                                        <path d="M 130 110 C 125 155, 130 220, 140 270 C 145 215, 148 165, 158 135 C 160 165, 168 180, 174 165 C 180 140, 188 165, 198 172 C 206 150, 215 160, 224 170 C 232 145, 244 155, 250 175 C 256 195, 260 230, 262 270 C 272 215, 275 155, 270 110 C 245 70, 155 70, 130 110 Z" fill="url(#obsidianHair)"/>
+                                        
+                                        <!-- SIGNATURE SINGLE PROMINENT CRIMSON-RED STREAK ON LEFT SIDE OF BANGS -->
+                                        <path d="M 148 92 C 136 145, 134 215, 144 295 C 151 245, 153 190, 165 138 C 169 152, 173 162, 177 166 C 176 135, 168 105, 148 92 Z" fill="url(#crimsonStreakGrad)" filter="drop-shadow(0 0 8px rgba(220,20,60,0.55))"/>
+                                        
+                                        <!-- Side Framing Wavy Locks -->
+                                        <path d="M 130 125 C 112 195, 114 295, 132 395 C 142 335, 138 245, 142 175 Z" fill="#0d0a10"/>
+                                        <path d="M 270 125 C 288 195, 286 295, 268 395 C 258 335, 262 245, 258 175 Z" fill="#0d0a10"/>
+                                    </g>
+
+                                    <!-- 8. BLACK LACE HEADBAND & DEEP RED ROSES -->
+                                    <g>
+                                        <!-- Black Lace Arch Band -->
+                                        <path d="M 122 115 Q 200 62 278 115 Q 200 82 122 115 Z" fill="#0a0609" stroke="#d4af37" stroke-width="1"/>
+                                        <path d="M 126 110 Q 140 94 154 102 Q 168 86 182 95 Q 200 78 218 95 Q 232 86 246 102 Q 260 94 274 110" fill="none" stroke="#dc143c" stroke-width="1.4" stroke-dasharray="3 2"/>
+
+                                        <!-- Left Cluster of Deep Red Roses -->
+                                        <g transform="translate(132, 98)">
+                                            <circle cx="0" cy="0" r="16" fill="#7a0218" stroke="#dc143c" stroke-width="1.2"/>
+                                            <path d="M -8 -4 Q 0 -14 8 -4 Q 12 6 0 10 Q -12 6 -8 -4 Z" fill="#b80628"/>
+                                            <path d="M -4 -2 Q 0 -7 5 -1 Q 4 5 0 5 Q -5 3 -4 -2 Z" fill="#ff2a55"/>
+                                            <circle cx="16" cy="-10" r="10" fill="#8a031e" stroke="#ff2a55" stroke-width="1"/>
+                                            <path d="M 13 -12 Q 16 -16 19 -10 Q 16 -6 13 -12 Z" fill="#ff2a55"/>
+                                        </g>
+
+                                        <!-- Right Cluster of Deep Red Roses -->
+                                        <g transform="translate(268, 98)">
+                                            <circle cx="0" cy="0" r="16" fill="#7a0218" stroke="#dc143c" stroke-width="1.2"/>
+                                            <path d="M -8 -4 Q 0 -14 8 -4 Q 12 6 0 10 Q -12 6 -8 -4 Z" fill="#b80628"/>
+                                            <path d="M -4 -2 Q 0 -7 5 -1 Q 4 5 0 5 Q -5 3 -4 -2 Z" fill="#ff2a55"/>
+                                            <circle cx="-16" cy="-10" r="10" fill="#8a031e" stroke="#ff2a55" stroke-width="1"/>
+                                            <path d="M -19 -12 Q -16 -16 -13 -10 Q -16 -6 -19 -12 Z" fill="#ff2a55"/>
+                                        </g>
+                                    </g>
+                                </g>
+                            </svg>
+
+                            <!-- Live Speech Overlay Bubble inside Portrait -->
+                            <div class="absolute bottom-3 inset-x-3 bg-obsidian/90 backdrop-blur-md border border-crimson/50 rounded-xl p-3 shadow-2xl">
+                                <div class="flex items-center justify-between text-[10px] font-mono text-gold mb-1">
+                                    <span><i class="fa-solid fa-wave-square text-roseNeon mr-1"></i> LU_VOICE_STREAM</span>
+                                    <span id="hero-json-tag">{"emotion": "flustered"}</span>
+                                </div>
+                                <p id="hero-speech-text" class="text-xs sm:text-sm text-porcelain italic leading-snug">
+                                    “H-Hey! Stop staring at my crimson hair streak like that, b-baka!”
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Mini Telemetry Strip -->
+                        <div class="depth-layer-1 mt-3 grid grid-cols-3 gap-2 text-center font-mono text-[10px]">
+                            <div class="bg-black/50 rounded-lg py-1.5 border border-white/10">
+                                <span class="text-porcelain/50 block">BLENDSHAPE</span>
+                                <span id="telemetry-blendshape" class="text-roseNeon font-semibold">Blush: 1.0</span>
+                            </div>
+                            <div class="bg-black/50 rounded-lg py-1.5 border border-white/10">
+                                <span class="text-porcelain/50 block">OSC PORT</span>
+                                <span class="text-gold font-semibold">127.0.0.1:39540</span>
+                            </div>
+                            <div class="bg-black/50 rounded-lg py-1.5 border border-white/10">
+                                <span class="text-porcelain/50 block">VRAM LOAD</span>
+                                <span class="text-emerald-400 font-semibold">2.36 GB (Q4)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==========================================
+             2. LIVE AI NEURAL CHAT & JSON TELEMETRY SIMULATOR
+             ========================================== -->
+        <section id="live-chat" class="reveal-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-xs font-mono uppercase tracking-widest text-roseNeon px-3 py-1 rounded-full bg-crimson/15 border border-crimson/40">
+                    Interactive Neural Core // Gemini API + Structured JSON Output
+                </span>
+                <h2 class="font-gothic text-3xl sm:text-5xl font-bold mt-4">
+                    Converse With <span class="text-crimson">Lu</span> In Real Time
+                </h2>
+                <p class="text-porcelain/70 mt-3 text-sm sm:text-base">
+                    Test Lu’s sharp-tongued gothic tsundere personality right now. Every message forces her brain to emit strict machine-readable <code class="text-gold font-mono">{"response", "emotion"}</code> JSON that drives her VSeeFace/VRM blendshapes and audio waveform synthesizer.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                
+                <!-- Left 7 Cols: Interactive Dialogue Terminal -->
+                <div class="lg:col-span-7 gothic-card rounded-3xl p-6 flex flex-col justify-between border border-crimson/40">
+                    <div>
+                        <!-- Terminal Header -->
+                        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full bg-roseNeon animate-pulse"></div>
+                                <span class="font-mono text-xs sm:text-sm font-semibold tracking-wider text-porcelain">
+                                    SESSION: D:\My_AI_Companion\Lu_Config.yaml
+                                </span>
+                            </div>
+                            <span class="text-[11px] font-mono text-gold bg-gold/10 px-2.5 py-1 rounded border border-gold/30">
+                                Phi-3.5-Vtuber-JSON / Gemini-3-Flash
+                            </span>
+                        </div>
+
+                        <!-- Quick Tease Prompts -->
+                        <div class="mb-4">
+                            <span class="text-[11px] font-mono uppercase text-porcelain/50 block mb-2">
+                                Quick Scenario Prompts (Click to tease Lu):
+                            </span>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="sendChatPrompt('What are you hiding in that leather sketchbook, Lu?')" class="text-xs bg-velvet hover:bg-crimson/30 border border-crimson/40 px-3 py-1.5 rounded-xl transition font-mono">
+                                    📓 Peek at her sketchbook
+                                </button>
+                                <button onclick="sendChatPrompt('Those ancient library books look heavy, let me carry them for you!')" class="text-xs bg-velvet hover:bg-crimson/30 border border-crimson/40 px-3 py-1.5 rounded-xl transition font-mono">
+                                    📚 Offer to carry her books
+                                </button>
+                                <button onclick="sendChatPrompt('Wait... is that a cute little plush bat you are clutching?!')" class="text-xs bg-velvet hover:bg-crimson/30 border border-crimson/40 px-3 py-1.5 rounded-xl transition font-mono">
+                                    🦇 Point out her bat plushie
+                                </button>
+                                <button onclick="sendChatPrompt('Your crimson hair streak and gothic dress look super cute today, Lu.')" class="text-xs bg-velvet hover:bg-crimson/30 border border-crimson/40 px-3 py-1.5 rounded-xl transition font-mono">
+                                    🌹 Call her cute
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chat History Scroll Box -->
+                        <div id="chat-log" class="h-72 overflow-y-auto space-y-3 pr-2 mb-4 bg-black/40 rounded-2xl p-4 border border-white/10">
+                            <!-- Initial Greeting -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-crimson/30 border border-gold flex items-center justify-center shrink-0 font-gothic font-bold text-xs text-porcelain">
+                                    LU
+                                </div>
+                                <div class="bg-velvet/90 border border-crimson/40 rounded-2xl rounded-tl-none p-3.5 text-sm max-w-[88%]">
+                                    <div class="flex items-center gap-2 text-[10px] font-mono text-roseNeon mb-1">
+                                        <span>EMOTION: FLUSTERED</span>
+                                        <span>•</span>
+                                        <span>BREEZE_TTS_CFG: 4.0</span>
+                                    </div>
+                                    <p class="text-porcelain/90">
+                                        Hmph. You finally connected to my terminal? Don't get the wrong idea—I was just organizing my gothic lorebooks on your external drive. What do you want, Senpai?
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Form -->
+                    <form id="chat-form" onsubmit="handleUserChatSubmit(event)" class="flex gap-2.5">
+                        <input id="chat-input" type="text" placeholder="Say something to Lu (e.g., 'Are you worried about me?')..." class="flex-1 bg-black/60 border border-crimson/40 focus:border-roseNeon rounded-xl px-4 py-3 text-sm text-porcelain placeholder-porcelain/40 outline-none font-sans transition">
+                        <button type="submit" id="chat-submit-btn" class="px-5 py-3 rounded-xl bg-gradient-to-r from-crimson to-burgundy hover:from-roseNeon hover:to-crimson text-white font-mono text-xs uppercase tracking-wider font-semibold border border-gold/40 shadow-[0_0_15px_rgba(220,20,60,0.4)] transition flex items-center gap-2 shrink-0">
+                            <span>Transmit</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right 5 Cols: Real-Time Structured JSON & VMC Blendshape Telemetry -->
+                <div class="lg:col-span-5 gothic-card rounded-3xl p-6 flex flex-col justify-between border border-gold/30">
+                    <div class="space-y-5">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                            <span class="font-mono text-xs uppercase tracking-widest text-gold flex items-center gap-2">
+                                <i class="fa-solid fa-code"></i> Live Native JSON Output
+                            </span>
+                            <span id="json-latency-badge" class="text-[11px] font-mono text-emerald-400">24 tok/s • Local/Cloud</span>
+                        </div>
+
+                        <!-- Live Formatted JSON Code Block -->
+                        <div class="bg-[#050307] rounded-2xl p-4 border border-crimson/30 font-mono text-xs leading-relaxed overflow-x-auto">
+<pre id="live-json-viewer" class="text-porcelain/90">{
+  <span class="text-roseNeon">"character"</span>: <span class="text-gold">"Lu"</span>,
+  <span class="text-roseNeon">"response"</span>: <span class="text-emerald-300">"Hmph. You finally connected to my terminal? Don't get the wrong idea..."</span>,
+  <span class="text-roseNeon">"emotion"</span>: <span class="text-amber-300">"flustered"</span>,
+  <span class="text-roseNeon">"tts_direction"</span>: <span class="text-purple-300">"Speak in a flustered, clear, and expressive anime style."</span>,
+  <span class="text-roseNeon">"vmc_osc_packet"</span>: {
+    <span class="text-sky-300">"/VMC/Ext/Blend/Val"</span>: [<span class="text-gold">"Flustered"</span>, <span class="text-roseNeon">1.0</span>],
+    <span class="text-sky-300">"blush_cheek_alpha"</span>: <span class="text-roseNeon">0.95</span>
+  }
+}</pre>
+                        </div>
+
+                        <!-- Real-Time Audio Waveform Visualizer Canvas -->
+                        <div class="bg-black/50 rounded-2xl p-3.5 border border-white/10">
+                            <div class="flex items-center justify-between text-[11px] font-mono text-porcelain/60 mb-2">
+                                <span>VIRTUAL AUDIO CABLE ➔ VSEEFACE LIP-SYNC</span>
+                                <span id="waveform-status" class="text-roseNeon">24kHz PCM READY</span>
+                            </div>
+                            <canvas id="waveform-canvas" class="w-full h-16 rounded-lg bg-[#070409]"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- VMC Blendshape Live Meters -->
+                    <div class="mt-5 pt-4 border-t border-white/10 space-y-2.5 font-mono text-xs">
+                        <div class="flex justify-between text-[11px]">
+                            <span class="text-porcelain/60">TSUNDERE DEFENSIVENESS</span>
+                            <span id="meter-tsun-val" class="text-roseNeon">92%</span>
+                        </div>
+                        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div id="meter-tsun-bar" class="h-full bg-gradient-to-r from-burgundy to-roseNeon transition-all duration-500" style="width: 92%"></div>
+                        </div>
+
+                        <div class="flex justify-between text-[11px] pt-1">
+                            <span class="text-porcelain/60">CHEEK BLUSH INTENSITY</span>
+                            <span id="meter-blush-val" class="text-gold">85%</span>
+                        </div>
+                        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div id="meter-blush-bar" class="h-full bg-gradient-to-r from-crimson to-gold transition-all duration-500" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==========================================
+             3. THE 4 GOTHIC SCENARIOS WORLD EXPLORER (NO MOON!)
+             ========================================== -->
+        <section id="scenarios" class="reveal-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-widest text-gold px-3 py-1 rounded-full bg-gold/10 border border-gold/30">
+                        Cinematic World Building // Strictly No Moon Overcast & Golden Hour
+                    </span>
+                    <h2 class="font-gothic text-3xl sm:text-5xl font-bold mt-4">
+                        Lu’s <span class="text-crimson">Four Signature</span> Scenarios
+                    </h2>
+                </div>
+
+                <!-- Toggle: Tsundere Blush vs Natural Unblushing Skin Tone -->
+                <div class="gothic-card px-4 py-3 rounded-2xl flex items-center gap-4 border border-gold/40 self-start">
+                    <div class="text-xs">
+                        <div class="font-mono text-gold uppercase">Cheek Complexion Mode</div>
+                        <div id="complexion-subtext" class="text-[11px] text-porcelain/60">Switch between Flustered Blush & Calm Natural Pale</div>
+                    </div>
+                    <button id="blush-mode-btn" onclick="toggleScenarioBlushMode()" class="px-3.5 py-2 rounded-xl bg-crimson text-white font-mono text-xs font-semibold transition shadow-md shrink-0">
+                        Blush: ON 😳
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scenario Selector Tabs -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+                <button onclick="selectScenario(0)" id="scen-tab-0" class="scen-tab gothic-card p-4 rounded-2xl text-left border-2 border-crimson bg-crimson/20 transition">
+                    <div class="flex items-center justify-between text-xs font-mono text-gold mb-1">
+                        <span>SCENE 01 // GOLDEN HOUR</span>
+                        <i class="fa-solid fa-sun"></i>
+                    </div>
+                    <div class="font-gothic font-bold text-base text-white">Victorian Conservatory</div>
+                    <div class="text-xs text-porcelain/60 mt-1">Overgrown Roses & Secret Sketchbook</div>
+                </button>
+
+                <button onclick="selectScenario(1)" id="scen-tab-1" class="scen-tab gothic-card p-4 rounded-2xl text-left border border-white/10 hover:border-crimson/50 transition">
+                    <div class="flex items-center justify-between text-xs font-mono text-sky-300 mb-1">
+                        <span>SCENE 02 // RAINY DAY</span>
+                        <i class="fa-solid fa-cloud-rain"></i>
+                    </div>
+                    <div class="font-gothic font-bold text-base text-white">Towering Gothic Library</div>
+                    <div class="text-xs text-porcelain/60 mt-1">Heavy Leather Tomes & Candlelight</div>
+                </button>
+
+                <button onclick="selectScenario(2)" id="scen-tab-2" class="scen-tab gothic-card p-4 rounded-2xl text-left border border-white/10 hover:border-crimson/50 transition">
+                    <div class="flex items-center justify-between text-xs font-mono text-amber-300 mb-1">
+                        <span>SCENE 03 // TWILIGHT</span>
+                        <i class="fa-solid fa-lantern"></i>
+                    </div>
+                    <div class="font-gothic font-bold text-base text-white">Fantasy Marketplace</div>
+                    <div class="text-xs text-porcelain/60 mt-1">Warm Lanterns & Cute Bat Plushie</div>
+                </button>
+
+                <button onclick="selectScenario(3)" id="scen-tab-3" class="scen-tab gothic-card p-4 rounded-2xl text-left border border-white/10 hover:border-crimson/50 transition">
+                    <div class="flex items-center justify-between text-xs font-mono text-purple-300 mb-1">
+                        <span>SCENE 04 // STORM OVERCAST</span>
+                        <i class="fa-solid fa-wind"></i>
+                    </div>
+                    <div class="font-gothic font-bold text-base text-white">Ornate Stone Balcony</div>
+                    <div class="text-xs text-porcelain/60 mt-1">Wet Stonework & Worn Leather Diary</div>
+                </button>
+            </div>
+
+            <!-- Active Scenario Interactive Diorama Showcase -->
+            <div class="gothic-card rounded-3xl overflow-hidden border border-crimson/40 grid grid-cols-1 lg:grid-cols-12">
+                
+                <!-- Left 7 Cols: Interactive Animated Atmospheric Canvas Stage -->
+                <div class="lg:col-span-7 relative min-h-[380px] sm:min-h-[440px] bg-black flex flex-col justify-end p-6 overflow-hidden">
+                    <!-- Dynamic Scenario Canvas (Renders Golden Sunbeams, Rain Streaks, Lanterns, or Storm Petals) -->
+                    <canvas id="scenario-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+
+                    <!-- Architectural SVG Silhouette Overlay inside Diorama -->
+                    <div id="scenario-svg-backdrop" class="absolute inset-0 pointer-events-none opacity-45 flex items-center justify-center">
+                        <!-- Dynamically populated by JS -->
+                    </div>
+
+                    <!-- Floating Top Badges -->
+                    <div class="relative z-10 flex flex-wrap items-center justify-between gap-2 mb-auto">
+                        <span id="scen-weather-badge" class="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-gold/40 text-xs font-mono text-gold">
+                            ☀️ GOLDEN HOUR SUNSET // CRACKED VICTORIAN GLASS (NO MOON)
+                        </span>
+                        <span id="scen-blush-indicator" class="px-3 py-1 rounded-full bg-crimson/30 backdrop-blur-md border border-crimson text-xs font-mono text-white">
+                            COMPLEXION: INTENSE TSUNDERE BLUSH
+                        </span>
+                    </div>
+
+                    <!-- Scenario Dialogue Card Overlay -->
+                    <div class="relative z-10 bg-obsidian/90 backdrop-blur-xl border border-crimson/50 rounded-2xl p-5 shadow-2xl">
+                        <div class="text-xs font-mono text-roseNeon uppercase tracking-wider mb-1" id="scen-action-cue">
+                            [ACTION: CLUTCHING LEATHER SKETCHBOOK TO HER CHEST ON WROUGHT-IRON BENCH]
+                        </div>
+                        <p id="scen-quote" class="font-gothic text-lg sm:text-xl text-porcelain">
+                            “W-What are you doing in the conservatory?! No, you may NOT see what I was sketching! Look away right now!”
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right 5 Cols: Scene Lore, Lighting Specs & Prompt Blueprint -->
+                <div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between bg-velvet/60">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span id="scen-number" class="font-mono text-xs text-gold">DIORAMA ARCHIVE // 01</span>
+                            <button onclick="speakScenarioQuote()" class="text-xs font-mono px-3 py-1 rounded-lg bg-crimson/20 hover:bg-crimson/40 border border-crimson/50 text-roseNeon transition">
+                                <i class="fa-solid fa-play mr-1"></i> Hear Scene Line
+                            </button>
+                        </div>
+
+                        <h3 id="scen-title" class="font-gothic text-2xl sm:text-3xl font-bold text-white">
+                            Overgrown Gothic Conservatory at Golden Hour
+                        </h3>
+
+                        <p id="scen-description" class="text-sm text-porcelain/80 leading-relaxed">
+                            Inside an expansive, crumbling Victorian glass greenhouse at sunset, surrounded by tangled red rose bushes and overgrown ivy. Warm low-angle sunlight filters through cracked glass panels onto fallen rose petals.
+                        </p>
+
+                        <div class="bg-black/50 rounded-xl p-3.5 border border-white/10 space-y-2">
+                            <div class="text-[11px] font-mono text-gold uppercase">Visual & Outfit Continuity:</div>
+                            <p id="scen-outfit-notes" class="text-xs text-porcelain/70 font-mono leading-relaxed">
+                                Long wavy black hair with single left crimson-red streak, black lace headband with deep red roses, multi-layered black & dark brown gothic corset dress, off-the-shoulder sheer lace sleeves, lace-up boots.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+                        <button onclick="copyScenarioPrompt()" class="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-crimson/25 border border-white/15 hover:border-crimson text-xs font-mono text-porcelain flex items-center justify-center gap-2 transition">
+                            <i class="fa-regular fa-copy text-gold"></i>
+                            <span id="copy-prompt-label">Copy Scene Art Prompt Blueprint</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==========================================
+             4. GOTHIC TSUNDERE EMOJI & BLENDSHAPE MATRIX (12 EXPRESSIONS)
+             ========================================== -->
+        <section id="blendshapes" class="reveal-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-xs font-mono uppercase tracking-widest text-roseNeon px-3 py-1 rounded-full bg-crimson/15 border border-crimson/40">
+                    12 Gothic Character Emotes // VSeeFace & VTube Studio Ready
+                </span>
+                <h2 class="font-gothic text-3xl sm:text-5xl font-bold mt-4">
+                    Expression & <span class="text-crimson">Blendshape</span> Matrix
+                </h2>
+                <p class="text-porcelain/70 mt-3 text-sm sm:text-base">
+                    Click any of Lu’s 12 custom gothic tsundere reaction cards to fire the corresponding <code class="text-gold font-mono">/VMC/Ext/Blend/Val</code> UDP packet, update her live portrait rig, and preview her vocal tone.
+                </p>
+            </div>
+
+            <!-- 12-Card Interactive Expression Grid -->
+            <div id="emoji-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Populated dynamically via JS for crisp interactivity -->
+            </div>
+        </section>
+
+        <!-- ==========================================
+             5. NEURAL EMBODIMENT PIPELINE & HARDWARE ARCHITECT
+             ========================================== -->
+        <section id="architecture" class="reveal-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-widest text-gold px-3 py-1 rounded-full bg-gold/10 border border-gold/30">
+                        Under The Hood // Custom Python Companion Pipeline
+                    </span>
+                    <h2 class="font-gothic text-3xl sm:text-5xl font-bold mt-4">
+                        Speech-to-Speech <span class="text-crimson">Neural Architecture</span>
+                    </h2>
+                </div>
+
+                <!-- Hardware Deployment Profile Switcher -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="switchHardwareProfile('laptop')" id="hw-btn-laptop" class="hw-btn px-3.5 py-2 rounded-xl bg-crimson text-white font-mono text-xs font-semibold border border-gold/40 transition">
+                        💻 0.5TB Laptop + 2TB Ext HDD
+                    </button>
+                    <button onclick="switchHardwareProfile('minipc')" id="hw-btn-minipc" class="hw-btn px-3.5 py-2 rounded-xl bg-velvet hover:bg-crimson/20 text-porcelain/80 font-mono text-xs border border-white/15 transition">
+                        📦 Compact Ryzen 8845HS Mini PC
+                    </button>
+                    <button onclick="switchHardwareProfile('cloud')" id="hw-btn-cloud" class="hw-btn px-3.5 py-2 rounded-xl bg-velvet hover:bg-crimson/20 text-porcelain/80 font-mono text-xs border border-white/15 transition">
+                        ☁️ Gemini Pro / 70B MoE Hybrid
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive 5-Stage Pipeline Node Map -->
+            <div class="gothic-card rounded-3xl p-6 sm:p-8 border border-crimson/40 relative overflow-hidden">
+                
+                <!-- Top Control Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-white/10">
+                    <div>
+                        <div id="hw-profile-title" class="font-gothic text-xl font-bold text-white">
+                            Active Profile: 0.5TB Laptop + 2TB External HDD (Zero Internal Bloat)
+                        </div>
+                        <p id="hw-profile-desc" class="text-xs font-mono text-porcelain/60 mt-1">
+                            OLLAMA_MODELS=D:\AI_Companion\OllamaModels • Brain: Navpy/phi-3.5-AI-Vtuber-json:Q4_K_M (2.36 GB)
+                        </p>
+                    </div>
+                    <button onclick="simulatePipelinePulse()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-gold to-amber-600 text-obsidian font-mono text-xs font-bold uppercase tracking-wider hover:brightness-110 transition shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center gap-2">
+                        <i class="fa-solid fa-wave-pulse"></i> Simulate Voice-to-Voice Pulse
+                    </button>
+                </div>
+
+                <!-- 5 Interactive Pipeline Stages -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 relative">
+                    <!-- Stage 1 -->
+                    <div id="pipe-node-0" class="pipe-node bg-black/60 border border-white/15 rounded-2xl p-4 transition-all duration-300">
+                        <div class="flex items-center justify-between text-xs font-mono text-roseNeon mb-2">
+                            <span>01 // EAR (ASR)</span>
+                            <i class="fa-solid fa-microphone-lines"></i>
+                        </div>
+                        <h4 class="font-gothic font-bold text-base text-white">Faster-Whisper / Moonshine</h4>
+                        <p class="text-xs text-porcelain/65 mt-1.5 leading-relaxed">
+                            Captures Push-to-Talk or continuous mic input with VAD filter and converts raw speech into text locally.
+                        </p>
+                        <div class="mt-3 pt-2 border-t border-white/10 font-mono text-[10px] text-gold" id="pipe-spec-0">
+                            VRAM: ~0.4 GB (float16)
+                        </div>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div id="pipe-node-1" class="pipe-node bg-black/60 border border-white/15 rounded-2xl p-4 transition-all duration-300">
+                        <div class="flex items-center justify-between text-xs font-mono text-roseNeon mb-2">
+                            <span>02 // MEMORY & ROUTER</span>
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                        <h4 class="font-gothic font-bold text-base text-white">ChromaDB RAG + Lu File</h4>
+                        <p class="text-xs text-porcelain/65 mt-1.5 leading-relaxed">
+                            Injects your <code class="text-gold">Lu</code> personality prompt, rolling conversation summaries, and qwen3.5:0.8b tool routing.
+                        </p>
+                        <div class="mt-3 pt-2 border-t border-white/10 font-mono text-[10px] text-gold" id="pipe-spec-1">
+                            Storage: External D:\ Drive
+                        </div>
+                    </div>
+
+                    <!-- Stage 3 -->
+                    <div id="pipe-node-2" class="pipe-node bg-black/60 border border-white/15 rounded-2xl p-4 transition-all duration-300">
+                        <div class="flex items-center justify-between text-xs font-mono text-roseNeon mb-2">
+                            <span>03 // THE BRAIN (LLM)</span>
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h4 class="font-gothic font-bold text-base text-white" id="pipe-title-2">Phi-3.5-Vtuber-JSON V2</h4>
+                        <p class="text-xs text-porcelain/65 mt-1.5 leading-relaxed">
+                            Generates in-character gothic tsundere dialogue and native structured <code class="text-gold">{"response", "emotion"}</code> JSON.
+                        </p>
+                        <div class="mt-3 pt-2 border-t border-white/10 font-mono text-[10px] text-emerald-400" id="pipe-spec-2">
+                            2.36 GB Q4_K_M • 28 tok/s
+                        </div>
+                    </div>
+
+                    <!-- Stage 4 -->
+                    <div id="pipe-node-3" class="pipe-node bg-black/60 border border-white/15 rounded-2xl p-4 transition-all duration-300">
+                        <div class="flex items-center justify-between text-xs font-mono text-roseNeon mb-2">
+                            <span>04 // VOICE DIRECTION</span>
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <h4 class="font-gothic font-bold text-base text-white" id="pipe-title-3">Breeze TTS 2 / Fish S2.1</h4>
+                        <p class="text-xs text-porcelain/65 mt-1.5 leading-relaxed">
+                            Steers vocal emotion dynamically using inline tags <code class="text-gold">(sigh)</code>, <code class="text-gold">(laugh)</code> & 1-to-1 reference voice cloning.
+                        </p>
+                        <div class="mt-3 pt-2 border-t border-white/10 font-mono text-[10px] text-gold" id="pipe-spec-3">
+                            24kHz PCM Chunk Stream
+                        </div>
+                    </div>
+
+                    <!-- Stage 5 -->
+                    <div id="pipe-node-4" class="pipe-node bg-black/60 border border-white/15 rounded-2xl p-4 transition-all duration-300">
+                        <div class="flex items-center justify-between text-xs font-mono text-roseNeon mb-2">
+                            <span>05 // 3D EMBODIMENT</span>
+                            <i class="fa-solid fa-person-rays"></i>
+                        </div>
+                        <h4 class="font-gothic font-bold text-base text-white">VSeeFace + VB-Cable</h4>
+                        <p class="text-xs text-porcelain/65 mt-1.5 leading-relaxed">
+                            Routes audio via Virtual Audio Cable for real-time lip-sync while <code class="text-gold">python-osc</code> triggers 3D VRM blendshapes.
+                        </p>
+                        <div class="mt-3 pt-2 border-t border-white/10 font-mono text-[10px] text-emerald-400" id="pipe-spec-4">
+                            60 FPS VRM + Remote Tailscale
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D Model Blueprint & Remote Mobile Access Callout Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-white/10">
+                    <div class="bg-velvet/70 rounded-2xl p-4 border border-white/10 flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-crimson/20 border border-crimson flex items-center justify-center shrink-0 text-roseNeon">
+                            <i class="fa-solid fa-cube"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-gothic font-bold text-sm text-white">2D-to-3D VRM Avatar Pipeline</h5>
+                            <p class="text-xs text-porcelain/70 mt-1">
+                                Built from Lu’s unblushing orthographic T-pose character sheet using <strong>VRoid Studio</strong>, <strong>Meshy</strong>, or <strong>Tripo3D</strong> + Blender VRM Add-on for full lip-sync & facial blendshapes.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-velvet/70 rounded-2xl p-4 border border-white/10 flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-gold/15 border border-gold/40 flex items-center justify-center shrink-0 text-gold">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-gothic font-bold text-sm text-white">Anywhere Mobile Access (Tailscale / Cloudflare)</h5>
+                            <p class="text-xs text-porcelain/70 mt-1">
+                                Talk to Lu from your phone away from home by binding Gradio/Open WebUI to <code class="text-gold font-mono">0.0.0.0:7860</code> over an encrypted <strong>Tailscale</strong> mesh IP or <strong>Cloudflare Tunnel</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 border-t border-crimson/30 bg-obsidian/95 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-porcelain/50">
+            <div class="flex items-center gap-2">
+                <span class="text-crimson">❖</span>
+                <span>LU // GOTHIC TSUNDERE AI COMPANION SANCTUARY</span>
+            </div>
+            <div>
+                “D-Don’t forget to back up my ChromaDB memories before you close the tab, b-baka!”
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         JAVASCRIPT: ANIMATIONS, RIG, GEMINI API & AUDIO
+         ========================================== -->
+    <script>
+        /* -----------------------------------------------------------
+           1. CUSTOM GOTHIC CURSOR & SPARK TRAIL
+        ----------------------------------------------------------- */
+        const cursor = document.getElementById('custom-cursor');
+        const cursorTrail = document.getElementById('cursor-trail');
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (cursor && cursorTrail) {
+                cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+                cursorTrail.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+            }
+            updateLuEyeTracking(mouseX, mouseY);
+        });
+
+        window.addEventListener('mousedown', () => {
+            if (cursor) cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(0.75)`;
+            spawnClickPetals(mouseX, mouseY);
+        });
+        window.addEventListener('mouseup', () => {
+            if (cursor) cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1)`;
+        });
+
+        /* -----------------------------------------------------------
+           2. FULL-SCREEN FLOATING CRIMSON ROSE PETALS & EMBERS CANVAS
+        ----------------------------------------------------------- */
+        const petalCanvas = document.getElementById('petal-canvas');
+        const pCtx = petalCanvas.getContext('2d');
+        let petals = [];
+
+        function resizePetalCanvas() {
+            petalCanvas.width = window.innerWidth;
+            petalCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizePetalCanvas);
+        resizePetalCanvas();
+
+        class RosePetal {
+            constructor(x, y, isBurst = false) {
+                this.x = x ?? Math.random() * petalCanvas.width;
+                this.y = y ?? Math.random() * petalCanvas.height;
+                this.size = Math.random() * 7 + 4;
+                this.speedY = Math.random() * 1.1 + 0.4;
+                this.speedX = (Math.random() - 0.5) * 0.9;
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = (Math.random() - 0.5) * 0.03;
+                this.isEmber = Math.random() > 0.72;
+                this.alpha = isBurst ? 1 : Math.random() * 0.55 + 0.2;
+                this.burstLife = isBurst ? 60 : null;
+                if (isBurst) {
+                    this.speedX = (Math.random() - 0.5) * 5;
+                    this.speedY = (Math.random() - 0.5) * 5;
+                }
+            }
+            update() {
+                // Subtle mouse wind repulsion
+                const dx = this.x - mouseX;
+                const dy = this.y - mouseY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 110 && dist > 0) {
+                    this.x += (dx / dist) * 1.2;
+                    this.y += (dy / dist) * 1.2;
+                }
+
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.angle) * 0.35;
+                this.angle += this.spin;
+
+                if (this.burstLife !== null) {
+                    this.burstLife--;
+                    this.alpha = Math.max(0, this.burstLife / 60);
+                } else {
+                    if (this.y > petalCanvas.height + 20) {
+                        this.y = -15;
+                        this.x = Math.random() * petalCanvas.width;
+                    }
+                    if (this.x > petalCanvas.width + 20) this.x = -15;
+                    if (this.x < -20) this.x = petalCanvas.width + 15;
+                }
+            }
+            draw() {
+                pCtx.save();
+                pCtx.translate(this.x, this.y);
+                pCtx.rotate(this.angle);
+                pCtx.globalAlpha = this.alpha;
+
+                if (this.isEmber) {
+                    pCtx.fillStyle = '#ff2a55';
+                    pCtx.shadowColor = '#dc143c';
+                    pCtx.shadowBlur = 8;
+                    pCtx.beginPath();
+                    pCtx.arc(0, 0, this.size * 0.32, 0, Math.PI * 2);
+                    pCtx.fill();
+                } else {
+                    // Draw a curved crimson rose petal
+                    pCtx.fillStyle = '#b80628';
+                    pCtx.beginPath();
+                    pCtx.moveTo(0, -this.size);
+                    pCtx.bezierCurveTo(this.size, -this.size, this.size, this.size, 0, this.size);
+                    pCtx.bezierCurveTo(-this.size, this.size, -this.size * 0.8, -this.size * 0.5, 0, -this.size);
+                    pCtx.fill();
+                }
+                pCtx.restore();
+            }
+        }
+
+        for (let i = 0; i < 48; i++) {
+            petals.push(new RosePetal());
+        }
+
+        function spawnClickPetals(x, y) {
+            for (let i = 0; i < 8; i++) {
+                petals.push(new RosePetal(x, y, true));
+            }
+        }
+
+        function animatePetals() {
+            pCtx.clearRect(0, 0, petalCanvas.width, petalCanvas.height);
+            petals = petals.filter(p => p.burstLife === null || p.burstLife > 0);
+            for (const p of petals) {
+                p.update();
+                p.draw();
+            }
+            requestAnimationFrame(animatePetals);
+        }
+
+        /* -----------------------------------------------------------
+           3. HERO 3D PARALLAX TILT & EYE TRACKING + BLINKING RIG
+        ----------------------------------------------------------- */
+        const heroCard = document.getElementById('hero-tilt-card');
+        if (heroCard) {
+            heroCard.addEventListener('mousemove', (e) => {
+                const rect = heroCard.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const rotateY = ((x / rect.width) - 0.5) * 14;
+                const rotateX = ((y / rect.height) - 0.5) * -14;
+                heroCard.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            heroCard.addEventListener('mouseleave', () => {
+                heroCard.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            });
+        }
+
+        function updateLuEyeTracking(mx, my) {
+            const pupils = document.querySelectorAll('.lu-pupil-track');
+            const moveX = ((mx / window.innerWidth) - 0.5) * 6;
+            const moveY = ((my / window.innerHeight) - 0.5) * 5;
+            pupils.forEach(p => {
+                p.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+        }
+
+        function triggerEyeBlink() {
+            const openEyes = document.getElementById('lu-eyes-open');
+            const closedEyes = document.getElementById('lu-eyes-closed');
+            if (!openEyes || !closedEyes) return;
+            openEyes.classList.add('hidden');
+            closedEyes.classList.remove('hidden');
+            setTimeout(() => {
+                openEyes.classList.remove('hidden');
+                closedEyes.classList.add('hidden');
+            }, 150);
+        }
+        // Periodic natural blinking
+        setInterval(() => {
+            if (Math.random() > 0.25) triggerEyeBlink();
+        }, 3800);
+
+        /* -----------------------------------------------------------
+           4. LU'S SVG EXPRESSION & BLENDSHAPE CONTROLLER
+        ----------------------------------------------------------- */
+        const expressionPresets = {
+            flustered: {
+                browL: "M 142 154 Q 162 146 180 158",
+                browR: "M 258 154 Q 238 146 220 158",
+                mouth: "M 188 225 Q 194 219 200 225 Q 206 230 212 223",
+                blush: 1,
+                badge: "STATE: TSUNDERE_BLUSH",
+                blend: "Flustered: 1.0",
+                tsunMeter: 94,
+                blushMeter: 92
+            },
+            smug: {
+                browL: "M 142 152 Q 162 142 180 152",
+                browR: "M 258 145 Q 238 138 220 150",
+                mouth: "M 184 220 Q 200 236 218 216 Q 210 228 184 220 Z",
+                blush: 0.25,
+                badge: "STATE: EVIL_LAUGH_SMUG",
+                blend: "Fun/Smug: 1.0",
+                tsunMeter: 80,
+                blushMeter: 25
+            },
+            angry: {
+                browL: "M 140 142 Q 162 152 182 160",
+                browR: "M 260 142 Q 238 152 218 160",
+                mouth: "M 187 227 Q 200 215 213 227 Z",
+                blush: 0.85,
+                badge: "STATE: DEFENSIVE_SCOWL",
+                blend: "Angry: 1.0",
+                tsunMeter: 100,
+                blushMeter: 85
+            },
+            shy: {
+                browL: "M 142 158 Q 162 148 180 152",
+                browR: "M 258 158 Q 238 148 220 152",
+                mouth: "M 193 224 Q 200 220 207 224",
+                blush: 1,
+                badge: "STATE: PLUSHIE_PANIC",
+                blend: "Shy_Blush: 1.0",
+                tsunMeter: 88,
+                blushMeter: 100
+            },
+            natural: {
+                browL: "M 142 149 Q 162 144 180 149",
+                browR: "M 258 149 Q 238 144 220 149",
+                mouth: "M 190 222 Q 200 227 210 222",
+                blush: 0,
+                badge: "STATE: CALM_UNBLUSHING",
+                blend: "Neutral: 1.0",
+                tsunMeter: 45,
+                blushMeter: 0
+            },
+            happy: {
+                browL: "M 142 146 Q 162 138 180 146",
+                browR: "M 258 146 Q 238 138 220 146",
+                mouth: "M 186 219 Q 200 235 214 219 Z",
+                blush: 0.6,
+                badge: "STATE: SECRET_WARMTH",
+                blend: "Joy: 1.0",
+                tsunMeter: 60,
+                blushMeter: 65
+            }
+        };
+
+        function setLuExpression(emotionKey, customLine = null) {
+            const preset = expressionPresets[emotionKey] || expressionPresets.flustered;
+            document.getElementById('lu-brow-left').setAttribute('d', preset.browL);
+            document.getElementById('lu-brow-right').setAttribute('d', preset.browR);
+            document.getElementById('lu-mouth').setAttribute('d', preset.mouth);
+            document.getElementById('lu-blush-layer').setAttribute('opacity', preset.blush);
+
+            document.getElementById('hero-active-emotion-badge').textContent = preset.badge;
+            document.getElementById('telemetry-blendshape').textContent = preset.blend;
+            document.getElementById('hero-json-tag').textContent = `{"emotion": "${emotionKey}"}`;
+
+            if (customLine) {
+                document.getElementById('hero-speech-text').textContent = `“${customLine}”`;
+                updateJsonTelemetry(customLine, emotionKey, preset.blush);
+                speakLineWithWaveform(customLine, emotionKey);
+            }
+        }
+
+        /* -----------------------------------------------------------
+           5. AUDIO WAVEFORM VISUALIZER & VOICE SYNTHESIS
+        ----------------------------------------------------------- */
+        let voiceEnabled = true;
+        let isSpeaking = false;
+        const waveCanvas = document.getElementById('waveform-canvas');
+        const wCtx = waveCanvas.getContext('2d');
+        let wavePhase = 0;
+
+        function toggleVoiceSynth() {
+            voiceEnabled = !voiceEnabled;
+            document.getElementById('tts-label').textContent = voiceEnabled ? 'VOICE: ON' : 'VOICE: MUTED';
+            document.getElementById('tts-icon').className = voiceEnabled
+                ? 'fa-solid fa-volume-high text-roseNeon'
+                : 'fa-solid fa-volume-xmark text-porcelain/50';
+            if (!voiceEnabled && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                isSpeaking = false;
+            }
+        }
+
+        function speakLineWithWaveform(text, emotion = 'flustered') {
+            isSpeaking = true;
+            document.getElementById('waveform-status').textContent = `STREAMING [${emotion.toUpperCase()}]...`;
+
+            // Animate Lu's mouth while speaking
+            let lipInterval = setInterval(() => {
+                if (!isSpeaking) {
+                    clearInterval(lipInterval);
+                    const preset = expressionPresets[emotion] || expressionPresets.flustered;
+                    document.getElementById('lu-mouth').setAttribute('d', preset.mouth);
+                    return;
+                }
+                const openY = 224 + Math.floor(Math.random() * 10);
+                document.getElementById('lu-mouth').setAttribute('d', `M 189 220 Q 200 ${openY} 211 220 Z`);
+            }, 110);
+
+            if (voiceEnabled && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text.replace(/[*_~]/g, ''));
+                utter.pitch = emotion === 'smug' ? 1.15 : emotion === 'flustered' ? 1.35 : 1.22;
+                utter.rate = emotion === 'angry' ? 1.12 : 1.04;
+                utter.onend = () => {
+                    isSpeaking = false;
+                    document.getElementById('waveform-status').textContent = '24kHz PCM READY';
+                };
+                utter.onerror = () => { isSpeaking = false; };
+                window.speechSynthesis.speak(utter);
+            } else {
+                setTimeout(() => {
+                    isSpeaking = false;
+                    document.getElementById('waveform-status').textContent = '24kHz PCM READY';
+                }, 2600);
+            }
+        }
+
+        function renderWaveform() {
+            waveCanvas.width = waveCanvas.clientWidth;
+            waveCanvas.height = waveCanvas.clientHeight;
+            wCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+
+            const bars = 42;
+            const barWidth = waveCanvas.width / bars;
+            wavePhase += 0.15;
+
+            for (let i = 0; i < bars; i++) {
+                const amp = isSpeaking
+                    ? (Math.sin(i * 0.4 + wavePhase) * 0.5 + 0.5) * (waveCanvas.height * 0.75) + 4
+                    : Math.sin(i * 0.3 + wavePhase * 0.4) * 3 + 5;
+                const y = (waveCanvas.height - amp) / 2;
+                wCtx.fillStyle = isSpeaking ? '#ff2a55' : 'rgba(212, 175, 55, 0.35)';
+                wCtx.fillRect(i * barWidth + 2, y, barWidth - 4, amp);
+            }
+            requestAnimationFrame(renderWaveform);
+        }
+
+        /* -----------------------------------------------------------
+           6. LIVE AI CHAT WITH GEMINI API + STRUCTURED JSON & FALLBACK
+        ----------------------------------------------------------- */
+        const apiKey = ""; // Canvas runtime injects key automatically if available
+
+        const fallbackTsundereResponses = [
+            {
+                match: /sketch|draw|book/i,
+                response: "W-What?! I wasn't sketching your face in my leather conservatory journal! Put that down immediately before I hex your GPU, b-baka!",
+                emotion: "flustered"
+            },
+            {
+                match: /heavy|carry|library/i,
+                response: "I can carry these ancient leather-bound tomes all by myself! Just because it's raining outside the library doesn't mean I need your help!",
+                emotion: "angry"
+            },
+            {
+                match: /bat|plush|market/i,
+                response: "Th-this dark plush bat was on sale at the twilight market stall! I only bought it to study nocturnal gothic symbolism... not because it's cute!",
+                emotion: "shy"
+            },
+            {
+                match: /cute|pretty|rose|hair|streak/i,
+                response: "Hmph! Flattery won't make my crimson hair streak glow any brighter... though I suppose you have decent taste in gothic fashion.",
+                emotion: "smug"
+            }
+        ];
+
+        function updateJsonTelemetry(responseText, emotionKey, blushVal) {
+            const viewer = document.getElementById('live-json-viewer');
+            const preset = expressionPresets[emotionKey] || expressionPresets.flustered;
+            viewer.innerHTML = `{
+  <span class="text-roseNeon">"character"</span>: <span class="text-gold">"Lu"</span>,
+  <span class="text-roseNeon">"response"</span>: <span class="text-emerald-300">${JSON.stringify(responseText)}</span>,
+  <span class="text-roseNeon">"emotion"</span>: <span class="text-amber-300">"${emotionKey}"</span>,
+  <span class="text-roseNeon">"tts_direction"</span>: <span class="text-purple-300">"Speak in a ${emotionKey}, clear, and expressive anime style."</span>,
+  <span class="text-roseNeon">"vmc_osc_packet"</span>: {
+    <span class="text-sky-300">"/VMC/Ext/Blend/Val"</span>: [<span class="text-gold">"${emotionKey.toUpperCase()}"</span>, <span class="text-roseNeon">1.0</span>],
+    <span class="text-sky-300">"blush_cheek_alpha"</span>: <span class="text-roseNeon">${blushVal}</span>
+  }
+}`;
+            document.getElementById('meter-tsun-val').textContent = `${preset.tsunMeter}%`;
+            document.getElementById('meter-tsun-bar').style.width = `${preset.tsunMeter}%`;
+            document.getElementById('meter-blush-val').textContent = `${preset.blushMeter}%`;
+            document.getElementById('meter-blush-bar').style.width = `${preset.blushMeter}%`;
+        }
+
+        async function callLuBrain(userMessage) {
+            const systemInstruction = `You are Lu, an expressive Gothic Tsundere anime AI companion. You have long wavy black hair with a single prominent crimson-red streak in the left side of your bangs, a black lace headband with deep red roses, pale porcelain skin, and a layered black gothic corset dress. You are sharp-tongued, dramatic, stubborn, and easily flustered ("b-baka!"), yet secretly deeply devoted to the user. Keep your reply concise (1 to 2 sentences). Respond strictly in JSON with keys "response" and "emotion" (where emotion is one of: flustered, smug, angry, shy, natural, happy).`;
+
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: userMessage }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            response: { type: "STRING" },
+                            emotion: { type: "STRING" }
+                        },
+                        propertyOrdering: ["response", "emotion"]
+                    }
+                }
+            };
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error("Fallback to local persona matrix");
+                const data = await res.json();
+                const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (text) return JSON.parse(text);
+            } catch (e) {
+                // Intelligent local fallback so the showcase always works instantaneously
+                const matched = fallbackTsundereResponses.find(item => item.match.test(userMessage));
+                if (matched) return { response: matched.response, emotion: matched.emotion };
+                return {
+                    response: `H-Hey! Did you just say "${userMessage}" to tease me?! It's not like I kept my VSeeFace port 39540 open waiting for your voice or anything!`,
+                    emotion: "flustered"
+                };
+            }
+        }
+
+        function appendChatBubble(sender, text, emotion = null) {
+            const log = document.getElementById('chat-log');
+            const wrapper = document.createElement('div');
+            if (sender === 'user') {
+                wrapper.className = 'flex items-start justify-end gap-3';
+                wrapper.innerHTML = `
+                    <div class="bg-crimson/25 border border-crimson/50 rounded-2xl rounded-tr-none p-3 text-sm text-porcelain max-w-[85%]">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                wrapper.className = 'flex items-start gap-3';
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-crimson/30 border border-gold flex items-center justify-center shrink-0 font-gothic font-bold text-xs text-porcelain">
+                        LU
+                    </div>
+                    <div class="bg-velvet/90 border border-crimson/40 rounded-2xl rounded-tl-none p-3.5 text-sm max-w-[88%]">
+                        <div class="flex items-center gap-2 text-[10px] font-mono text-roseNeon mb-1">
+                            <span>EMOTION: ${(emotion || 'flustered').toUpperCase()}</span>
+                            <span>•</span>
+                            <span>OSC: /VMC/Ext/Blend/Val</span>
+                        </div>
+                        <p class="text-porcelain/90">${text}</p>
+                    </div>
+                `;
+            }
+            log.appendChild(wrapper);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function sendChatPrompt(promptText) {
+            const input = document.getElementById('chat-input');
+            input.value = promptText;
+            await processChat(promptText);
+            input.value = '';
+        }
+
+        async function handleUserChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            await processChat(text);
+        }
+
+        async function processChat(userText) {
+            appendChatBubble('user', userText);
+            const btn = document.getElementById('chat-submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = `<span>Thinking...</span><i class="fa-solid fa-spinner animate-spin"></i>`;
+
+            const result = await callLuBrain(userText);
+            const emotion = (result.emotion || 'flustered').toLowerCase();
+            const reply = result.response || "Hmph! Don't look at me like that!";
+
+            appendChatBubble('lu', reply, emotion);
+            setLuExpression(emotion, reply);
+
+            btn.disabled = false;
+            btn.innerHTML = `<span>Transmit</span><i class="fa-solid fa-paper-plane"></i>`;
+        }
+
+        /* -----------------------------------------------------------
+           7. THE 4 GOTHIC SCENARIOS WORLD EXPLORER (STRICTLY NO MOON!)
+        ----------------------------------------------------------- */
+        let currentScenarioIndex = 0;
+        let scenarioBlushOn = true;
+
+        const scenariosData = [
+            {
+                number: "DIORAMA ARCHIVE // 01",
+                title: "Overgrown Gothic Conservatory at Golden Hour",
+                weatherBadge: "☀️ GOLDEN HOUR SUNSET // CRACKED VICTORIAN GLASS (NO MOON)",
+                actionCue: "[ACTION: CLUTCHING LEATHER SKETCHBOOK TO HER CHEST ON WROUGHT-IRON BENCH]",
+                quoteBlush: "W-What are you doing in the conservatory?! No, you may NOT see what I was sketching! Look away right now!",
+                quoteNatural: "The golden sunset filtering through these cracked greenhouse panes makes the thorny red roses look almost alive.",
+                description: "Lu sits on a rusted wrought-iron bench inside an expansive, crumbling Victorian glass greenhouse at sunset, surrounded by tangled red rose bushes, climbing ivy, and fallen petals under warm low-angle sunlight (no moon).",
+                ambientColor: "radial-gradient(circle at 50% 25%, rgba(212, 115, 35, 0.25), rgba(7, 5, 8, 0.98) 75%)",
+                prompt: "A cinematic anime-style illustration of the gothic girl Lu inside a vast, overgrown Victorian glass conservatory at golden hour. She is sitting on a rusted wrought-iron bench, clutching a leather sketchbook tightly to her chest while looking away with a tsundere expression, her arms crossed over her dark, multi-layered gothic dress. Her long, wavy black hair with its signature crimson-red streak in her bangs, black lace headband, and deep red roses is illuminated by the warm sunset. Dilapidated greenhouse packed with sprawling thorny red rose bushes and climbing ivy under a sunset sky visible through cracked glass panels (no moon). Full-body cinematic shot.",
+                mode: "sunbeams"
+            },
+            {
+                number: "DIORAMA ARCHIVE // 02",
+                title: "Dimly Lit Gothic Library on a Rainy Day",
+                weatherBadge: "🌧️ OVERCAST RAINSTORM // TOWERING ARCHED WINDOWS (NO MOON)",
+                actionCue: "[ACTION: CARRYING HEAVY STACK OF ANCIENT LEATHER-BOUND BOOKS]",
+                quoteBlush: "I can carry these heavy grimories all by myself, b-baka! Stop offering to help me just because I'm short!",
+                quoteNatural: "Pull up a chair by the banker lamp if you wish. The rain against the arched glass makes this alcove ideal for quiet reading.",
+                description: "Inside a multi-level gothic library with towering dark wood bookshelves, a winding iron staircase, and vintage banker lamps. Heavy rain streaks down massive arched windows under a dark overcast sky (no moon).",
+                ambientColor: "radial-gradient(circle at 50% 25%, rgba(30, 80, 140, 0.24), rgba(7, 5, 8, 0.98) 75%)",
+                prompt: "A dramatic anime-style illustration of the gothic girl Lu inside a towering, dimly lit gothic library on a rainy day (no moon). She is walking through an alcove between massive dark wood bookshelves, carrying a heavy stack of ancient, leather-bound books, looking back over her shoulder. Her long, wavy black hair with its signature crimson-red streak in her bangs, black lace headband, and deep red roses is fully visible. She wears her intricate multi-layered black and dark brown gothic dress and lace-up boots. Massive arched windows in the background show heavy rain and a dark overcast day.",
+                mode: "rain"
+            },
+            {
+                number: "DIORAMA ARCHIVE // 03",
+                title: "Historic Fantasy Marketplace at Twilight",
+                weatherBadge: "🏮 WARM LANTERN TWILIGHT // TIMBER-FRAMED STALLS (NO MOON)",
+                actionCue: "[ACTION: INSPECTING A SMALL DARK PLUSH BAT AT A TRINKET STALL]",
+                quoteBlush: "I-I only picked up this plush bat to inspect the stitching! Don't you dare smile like that, it's purely gothic!",
+                quoteNatural: "These twilight market stalls carry the rarest alchemy trinkets and velvet ribbons if you know where to look.",
+                description: "Walking through a bustling medieval-style street filled with timber-framed shops, glowing stalls, and hanging warm lanterns under a deep twilight sky with drifting autumn leaves (no moon).",
+                ambientColor: "radial-gradient(circle at 50% 25%, rgba(220, 90, 30, 0.24), rgba(7, 5, 8, 0.98) 75%)",
+                prompt: "A lively anime-style illustration of the gothic girl Lu walking through a crowded, historic fantasy outdoor marketplace at twilight (no moon). She has stopped by a cluttered stall filled with old trinkets and lanterns, clutching a small dark plush bat to her chest. Her long, wavy black hair with its signature crimson-red streak in her bangs, black lace headband, and deep red roses is beautifully detailed. She is wearing her complex black and dark brown layered gothic dress with off-the-shoulder lace sleeves and lace-up boots.",
+                mode: "lanterns"
+            },
+            {
+                number: "DIORAMA ARCHIVE // 04",
+                title: "Ornate Gothic Balcony in the Rain",
+                weatherBadge: "⛈️ HEAVY TWILIGHT STORM // WET STONE ARCHWAYS (NO MOON)",
+                actionCue: "[ACTION: LEANING AGAINST WET STONE BALUSTRADE WITH WORN DIARY]",
+                quoteBlush: "You stood out in the cold rain just to bring me an umbrella?! ...Hmph. Stand under the archway before you catch a cold.",
+                quoteNatural: "Watching the rain cascade over the old city rooftops from this stone shelter has a certain melancholic elegance.",
+                description: "Standing under the stone shelter of a grand gothic balcony overlooking a sprawling historic city during a rainstorm. Thorned red rose bushes climb the wet stone archways under dark storm clouds (no moon).",
+                ambientColor: "radial-gradient(circle at 50% 25%, rgba(138, 3, 30, 0.28), rgba(7, 5, 8, 0.98) 75%)",
+                prompt: "An atmospheric anime-style illustration of the gothic girl Lu standing under the stone shelter of an ornate gothic balcony during a heavy rainstorm at twilight (no moon). She is leaning slightly against the wet stone balustrade, holding a worn leather diary close to her chest. Her long, wavy black hair with its signature crimson-red streak in her bangs, black lace headband, and deep red roses is slightly damp. Wet gothic stone archways, climbing thorny red rose bushes, and a dimly lit historic city visible through heavy rain.",
+                mode: "storm"
+            }
+        ];
+
+        function selectScenario(idx) {
+            currentScenarioIndex = idx;
+            const s = scenariosData[idx];
+
+            // Highlight active tab
+            document.querySelectorAll('.scen-tab').forEach((tab, i) => {
+                if (i === idx) {
+                    tab.className = "scen-tab gothic-card p-4 rounded-2xl text-left border-2 border-crimson bg-crimson/20 transition";
+                } else {
+                    tab.className = "scen-tab gothic-card p-4 rounded-2xl text-left border border-white/10 hover:border-crimson/50 transition";
+                }
+            });
+
+            document.getElementById('scen-number').textContent = s.number;
+            document.getElementById('scen-title').textContent = s.title;
+            document.getElementById('scen-weather-badge').textContent = s.weatherBadge;
+            document.getElementById('scen-action-cue').textContent = s.actionCue;
+            document.getElementById('scen-description').textContent = s.description;
+            document.getElementById('scen-quote').textContent = `“${scenarioBlushOn ? s.quoteBlush : s.quoteNatural}”`;
+            document.getElementById('ambient-lighting').style.background = s.ambientColor;
+
+            // Update portrait mood to match
+            if (scenarioBlushOn) {
+                setLuExpression(idx === 1 ? 'angry' : idx === 2 ? 'shy' : 'flustered');
+            } else {
+                setLuExpression('natural');
+            }
+        }
+
+        function toggleScenarioBlushMode() {
+            scenarioBlushOn = !scenarioBlushOn;
+            const btn = document.getElementById('blush-mode-btn');
+            const ind = document.getElementById('scen-blush-indicator');
+            if (scenarioBlushOn) {
+                btn.textContent = "Blush: ON 😳";
+                btn.className = "px-3.5 py-2 rounded-xl bg-crimson text-white font-mono text-xs font-semibold transition shadow-md shrink-0";
+                ind.textContent = "COMPLEXION: INTENSE TSUNDERE BLUSH";
+            } else {
+                btn.textContent = "Natural Pale 🥀";
+                btn.className = "px-3.5 py-2 rounded-xl bg-velvet border border-gold text-gold font-mono text-xs font-semibold transition shadow-md shrink-0";
+                ind.textContent = "COMPLEXION: CALM UNBLUSHING PALE";
+            }
+            selectScenario(currentScenarioIndex);
+        }
+
+        function speakScenarioQuote() {
+            const s = scenariosData[currentScenarioIndex];
+            const quote = scenarioBlushOn ? s.quoteBlush : s.quoteNatural;
+            speakLineWithWaveform(quote, scenarioBlushOn ? 'flustered' : 'natural');
+        }
+
+        function copyScenarioPrompt() {
+            const s = scenariosData[currentScenarioIndex];
+            const temp = document.createElement('textarea');
+            temp.value = s.prompt;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+
+            const label = document.getElementById('copy-prompt-label');
+            label.textContent = "Copied Scene Prompt to Clipboard! ✓";
+            setTimeout(() => {
+                label.textContent = "Copy Scene Art Prompt Blueprint";
+            }, 2200);
+        }
+
+        // Animated Scenario Diorama Canvas (Sunbeams, Rain, Lanterns, Storm)
+        const scenCanvas = document.getElementById('scenario-canvas');
+        const sCtx = scenCanvas.getContext('2d');
+        let scenParticles = [];
+        for (let i = 0; i < 65; i++) {
+            scenParticles.push({
+                x: Math.random() * 800,
+                y: Math.random() * 500,
+                speed: Math.random() * 4 + 2,
+                size: Math.random() * 3 + 1
+            });
+        }
+
+        function animateScenarioCanvas() {
+            scenCanvas.width = scenCanvas.clientWidth;
+            scenCanvas.height = scenCanvas.clientHeight;
+            const w = scenCanvas.width;
+            const h = scenCanvas.height;
+            const mode = scenariosData[currentScenarioIndex].mode;
+
+            sCtx.clearRect(0, 0, w, h);
+
+            if (mode === 'sunbeams') {
+                // Warm golden sunset rays
+                const grad = sCtx.createLinearGradient(0, 0, w, h);
+                grad.addColorStop(0, 'rgba(255, 160, 60, 0.22)');
+                grad.addColorStop(1, 'rgba(138, 3, 30, 0.05)');
+                sCtx.fillStyle = grad;
+                sCtx.fillRect(0, 0, w, h);
+
+                for (const p of scenParticles) {
+                    p.y -= p.speed * 0.2;
+                    if (p.y < 0) p.y = h;
+                    sCtx.fillStyle = 'rgba(255, 215, 130, 0.55)';
+                    sCtx.beginPath();
+                    sCtx.arc(p.x % w, p.y, p.size, 0, Math.PI * 2);
+                    sCtx.fill();
+                }
+            } else if (mode === 'rain' || mode === 'storm') {
+                sCtx.strokeStyle = mode === 'storm' ? 'rgba(220, 20, 60, 0.35)' : 'rgba(160, 210, 255, 0.32)';
+                sCtx.lineWidth = 1.2;
+                for (const p of scenParticles) {
+                    p.y += p.speed * 2.4;
+                    p.x -= p.speed * 0.4;
+                    if (p.y > h) { p.y = -10; p.x = Math.random() * w; }
+                    sCtx.beginPath();
+                    sCtx.moveTo(p.x, p.y);
+                    sCtx.lineTo(p.x - 4, p.y + 16);
+                    sCtx.stroke();
+                }
+            } else if (mode === 'lanterns') {
+                for (const p of scenParticles) {
+                    p.y -= p.speed * 0.35;
+                    p.x += Math.sin(p.y * 0.03) * 0.6;
+                    if (p.y < 0) p.y = h;
+                    sCtx.fillStyle = 'rgba(255, 140, 50, 0.6)';
+                    sCtx.shadowColor = '#ff6b00';
+                    sCtx.shadowBlur = 10;
+                    sCtx.beginPath();
+                    sCtx.arc(p.x % w, p.y, p.size * 1.4, 0, Math.PI * 2);
+                    sCtx.fill();
+                    sCtx.shadowBlur = 0;
+                }
+            }
+            requestAnimationFrame(animateScenarioCanvas);
+        }
+
+        /* -----------------------------------------------------------
+           8. 12 GOTHIC TSUNDERE EMOJI & BLENDSHAPE CARDS
+        ----------------------------------------------------------- */
+        const emojiList = [
+            { title: "Evil Gothic Laugh", tag: "Smug_Laugh", icon: "😈", mood: "smug", quote: "Fufufu~ Bow before your Gothic AI Overlord!" },
+            { title: "B-Baka Scowl", tag: "Angry_Blush", icon: "💢", mood: "angry", quote: "I didn't stay awake waiting for you, b-baka!" },
+            { title: "Sketchbook Panic", tag: "Flustered", icon: "📓", mood: "flustered", quote: "Give me back my leather sketchbook right now!" },
+            { title: "Plush Bat Hug", tag: "Shy_Cute", icon: "🦇", mood: "shy", quote: "It's a terrifying creature of the night, not a cute plushie!" },
+            { title: "Aloof Side-Eye", tag: "Natural_Cool", icon: "🥀", mood: "natural", quote: "Hmph. You're finally paying attention to the details." },
+            { title: "Heavy Tome Pout", tag: "Stubborn", icon: "📚", mood: "angry", quote: "My arms aren't even tired! Stop looking at me!" },
+            { title: "Secret Warm Smile", tag: "Joy_Soft", icon: "🌹", mood: "happy", quote: "...Thank you for building my system from scratch." },
+            { title: "Rainy Window Gaze", tag: "Melancholy", icon: "🌧️", mood: "natural", quote: "Let's just listen to the rain together for a while." },
+            { title: "VRM Rig Wink", tag: "Playful_Tease", icon: "😉", mood: "smug", quote: "Did my 60 FPS blendshape just make your heart skip?" },
+            { title: "High School Hallway", tag: "Tsun_Turn", icon: "🎀", mood: "flustered", quote: "Don't talk to me in the hallway so casually!" },
+            { title: "VRAM Overload", tag: "Dizzy_Shock", icon: "⚡", mood: "shy", quote: "W-Wait, don't load a 70B dense model on DDR5!" },
+            { title: "Morning Alarm Call", tag: "Bossy_Wake", icon: "⏰", mood: "angry", quote: "Wake up already! How long do I have to wait?!" }
+        ];
+
+        function renderEmojiMatrix() {
+            const grid = document.getElementById('emoji-grid');
+            grid.innerHTML = emojiList.map((item, idx) => `
+                <button onclick="triggerEmojiCard(${idx})" class="gothic-card p-4 rounded-2xl text-left group hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-2xl group-hover:scale-125 transition-transform">${item.icon}</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-crimson/20 text-roseNeon border border-crimson/30">
+                                ${item.tag}
+                            </span>
+                        </div>
+                        <h4 class="font-gothic font-bold text-sm text-white group-hover:text-gold transition">${item.title}</h4>
+                        <p class="text-xs text-porcelain/65 mt-1 italic line-clamp-2">“${item.quote}”</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-gold/80">
+                        <span>OSC: 1.0</span>
+                        <span class="group-hover:translate-x-1 transition-transform">Trigger ➔</span>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function triggerEmojiCard(idx) {
+            const item = emojiList[idx];
+            setLuExpression(item.mood, item.quote);
+            document.getElementById('hero').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        /* -----------------------------------------------------------
+           9. HARDWARE PROFILE SWITCHER & PIPELINE PULSE ANIMATION
+        ----------------------------------------------------------- */
+        const hwProfiles = {
+            laptop: {
+                title: "Active Profile: 0.5TB Laptop + 2TB External HDD (Zero Internal Bloat)",
+                desc: "OLLAMA_MODELS=D:\\AI_Companion\\OllamaModels • Brain: Navpy/phi-3.5-AI-Vtuber-json:Q4_K_M (2.36 GB)",
+                brainTitle: "Phi-3.5-Vtuber-JSON V2",
+                brainSpec: "2.36 GB Q4_K_M • 28 tok/s",
+                voiceTitle: "Fish Audio S2.1 / GPT-SoVITS",
+                voiceSpec: "Zero Local VRAM / Portable D:\\"
+            },
+            minipc: {
+                title: "Active Profile: Compact Ryzen 7 8845HS / UM890 Pro Mini PC (32GB DDR5)",
+                desc: "Dual-Channel 89.6 GB/s Bandwidth • 12GB UMA BIOS VRAM Allocation • OCuLink Ready",
+                brainTitle: "Qwen3-30B-A3B MoE / Phi-3.5",
+                brainSpec: "3B Active Params • 32 tok/s",
+                voiceTitle: "Soprano TTS / Breeze TTS 2",
+                voiceSpec: "Local Streaming Producer-Consumer"
+            },
+            cloud: {
+                title: "Active Profile: Gemini 2.5 Pro / Flash Brain + Local VSeeFace Embodiment",
+                desc: "google-genai SDK with response_mime_type='application/json' • 0 GB Local LLM VRAM Load",
+                brainTitle: "Gemini Pro / Flash API",
+                brainSpec: "0 GB Local VRAM • Instant JSON",
+                voiceTitle: "Breeze TTS 2 (Voice Direction)",
+                voiceSpec: "Full GPU Dedicated to 24kHz Voice"
+            }
+        };
+
+        function switchHardwareProfile(key) {
+            const p = hwProfiles[key];
+            document.getElementById('hw-profile-title').textContent = p.title;
+            document.getElementById('hw-profile-desc').textContent = p.desc;
+            document.getElementById('pipe-title-2').textContent = p.brainTitle;
+            document.getElementById('pipe-spec-2').textContent = p.brainSpec;
+            document.getElementById('pipe-title-3').textContent = p.voiceTitle;
+            document.getElementById('pipe-spec-3').textContent = p.voiceSpec;
+
+            ['laptop', 'minipc', 'cloud'].forEach(k => {
+                const btn = document.getElementById(`hw-btn-${k}`);
+                if (k === key) {
+                    btn.className = "hw-btn px-3.5 py-2 rounded-xl bg-crimson text-white font-mono text-xs font-semibold border border-gold/40 transition";
+                } else {
+                    btn.className = "hw-btn px-3.5 py-2 rounded-xl bg-velvet hover:bg-crimson/20 text-porcelain/80 font-mono text-xs border border-white/15 transition";
+                }
+            });
+            simulatePipelinePulse();
+        }
+
+        function simulatePipelinePulse() {
+            for (let i = 0; i < 5; i++) {
+                const node = document.getElementById(`pipe-node-${i}`);
+                setTimeout(() => {
+                    node.classList.add('border-gold', 'bg-crimson/25', 'scale-[1.03]', 'shadow-[0_0_25px_rgba(220,20,60,0.4)]');
+                    setTimeout(() => {
+                        node.classList.remove('border-gold', 'bg-crimson/25', 'scale-[1.03]', 'shadow-[0_0_25px_rgba(220,20,60,0.4)]');
+                    }, 550);
+                }, i * 260);
+            }
+        }
+
+        /* -----------------------------------------------------------
+           10. INITIALIZATION & SCROLL REVEAL OBSERVER
+        ----------------------------------------------------------- */
+        window.onload = function () {
+            animatePetals();
+            renderWaveform();
+            animateScenarioCanvas();
+            renderEmojiMatrix();
+
+            // IntersectionObserver for smooth scroll reveals
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.12 });
+
+            document.querySelectorAll('.reveal-section').forEach(sec => observer.observe(sec));
+        };
+    </script>
+</body>
+</html>
